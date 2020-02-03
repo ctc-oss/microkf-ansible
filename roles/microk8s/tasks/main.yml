@@ -4,3 +4,45 @@
     name: microk8s
     classic: yes
     channel: "{{ microk8s_channel }}"
+
+- name: alias kubectl
+  shell: |
+    snap alias microk8s.kubectl k
+    snap alias microk8s.kubectl kubectl
+
+- name: alias kubectl
+  shell: |
+    snap alias microk8s.kubectl k
+    snap alias microk8s.kubectl kubectl
+
+- name: enable alpha api
+  lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    line: '--runtime-config=settings.k8s.io/v1alpha1=true'
+
+- name: enable pod presets
+  lineinfile:
+    path: /var/snap/microk8s/current/args/kube-apiserver
+    line: '--enable-admission-plugins="PodPreset"'
+
+- name: restart kube api server
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: snap.microk8s.daemon-apiserver.service
+
+# if https proxy is required
+- name: containerd proxy
+  lineinfile:
+    path: /var/snap/microk8s/current/args/containerd-env
+    regexp: '^HTTPS_PROXY='
+    line: 'HTTPS_PROXY={{ proxy_env.https_proxy }}'
+  when: proxy_env.https_proxy != ""
+
+- name: restart containerd
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: snap.microk8s.daemon-containerd.service
+  when: proxy_env.https_proxy != ""
+
