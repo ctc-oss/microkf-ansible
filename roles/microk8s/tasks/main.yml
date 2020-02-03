@@ -46,3 +46,5 @@
     name: snap.microk8s.daemon-containerd.service
   when: proxy_env.https_proxy != ""
 
+- name: enable microk8s features
+  shell: microk8s.enable dns dashboard storage gpu ingress istio
