@@ -47,4 +47,8 @@
   when: proxy_env.https_proxy != ""
 
 - name: enable microk8s features
-  shell: microk8s.enable dns dashboard storage gpu ingress istio
+  shell: microk8s.enable dns dashboard storage gpu ingress
+
+- name: enable microk8s features (istio)
+  shell: echo "n" | microk8s.enable istio
+  environment: "{{ proxy_env }}"
