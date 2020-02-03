@@ -1,0 +1,6 @@
+---
+- name: install microk8s
+  snap:
+    name: microk8s
+    classic: yes
+    channel: "{{ microk8s_channel }}"

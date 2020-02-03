@@ -1,0 +1,6 @@
+microk8s_channel: 1.17/stable
+
+proxy_env:
+  http_proxy: "{{ lookup('env', 'playbook_http_proxy') | default('') }}"
+  https_proxy: "{{ lookup('env', 'playbook_https_proxy') | default('') }}"
+  no_proxy: "{{ lookup('env', 'playbook_no_proxy') | default('') }}"

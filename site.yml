@@ -1,0 +1,11 @@
+---
+- name: Set up Microk8s
+  hosts: localhost
+  become: yes
+  pre_tasks:
+    - name: set snap proxy
+      shell: |
+        snap set system proxy.http="{{ proxy_env.https_proxy }}"
+        snap set system proxy.https="{{ proxy_env.https_proxy }}"
+  roles:
+    - microk8s
