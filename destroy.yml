@@ -1,0 +1,11 @@
+---
+- name: remove microk8s
+  hosts: localhost
+  pre_tasks:
+    - name: Set variables
+      set_fact:
+        state: absent
+  tasks:
+    - name: remove microk8s
+      shell: snap remove microk8s
+      become: yes
