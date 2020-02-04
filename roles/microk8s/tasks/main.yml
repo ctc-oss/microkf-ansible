@@ -52,3 +52,9 @@
 - name: enable microk8s features (istio)
   shell: echo "n" | microk8s.enable istio
   environment: "{{ proxy_env }}"
+
+- name: export kubectl config file
+  shell:
+    chdir: $HOME/.kube
+    cmd: kubectl config view --raw > config
+  become: no
