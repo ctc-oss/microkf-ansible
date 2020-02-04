@@ -60,6 +60,11 @@
     path: "{{ workspace.path }}/istio"
     state: directory
 
+- name: create snap current bin
+  file:
+    path: /var/snap/microk8s/current/bin/
+    state: directory
+
 - name: create istio snap dir
   file:
     path: /var/snap/microk8s/current/actions/istio/
@@ -72,11 +77,12 @@
     extra_opts:
       - --strip=1
     remote_src: yes
+  environment: "{{ proxy_env }}"
 
 - name: install istioctl
   copy:
     src: "{{ workspace.path }}/istio/bin/istioctl"
-    dest: /var/snap/microk8s/current/bin
+    dest: /var/snap/microk8s/current/bin/
   become: yes
 
 - name: copy istio crds to snap path

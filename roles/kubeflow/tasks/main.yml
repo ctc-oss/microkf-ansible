@@ -33,8 +33,9 @@
 
 - name: kfctl build
   shell:
-    cmd: "{{ workspace.path }}/bin/kfctl build {{ kubeflow_profile }} -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    cmd: "{{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
+  environment: "{{ proxy_env }}"
 
 - name: kfctl apply
   shell:
