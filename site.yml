@@ -7,6 +7,14 @@
       shell: |
         snap set system proxy.http="{{ proxy_env.https_proxy }}"
         snap set system proxy.https="{{ proxy_env.https_proxy }}"
+
+    - name: create temp workspace
+      tempfile:
+        state: directory
+        suffix: microkf
+      register: workspace
+      become: no
+
   roles:
     - microk8s
 

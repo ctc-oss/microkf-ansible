@@ -1,9 +1,4 @@
 ---
-- name: create tmp workspace
-  tempfile:
-    state: directory
-    suffix: microkf
-  register: workspace
 
 - name: create tmp workspace bin
   file:
