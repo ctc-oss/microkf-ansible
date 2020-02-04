@@ -49,6 +49,56 @@
 - name: enable microk8s features
   shell: microk8s.enable dns dashboard storage gpu ingress
 
+#
+# istio is broken in microk8s at 1.17
+# pull in istio 1.3.6 here to fix issue
+# prefetch itsio so microk8s doesnt have to
+#
+
+- name: create istio workspace
+  file:
+    path: "{{ workspace.path }}/istio"
+    state: directory
+
+- name: create istio snap dir
+  file:
+    path: /var/snap/microk8s/current/actions/istio/
+    state: directory
+
+- name: download istio 1.3.6 (hack)
+  unarchive:
+    src: "https://github.com/istio/istio/releases/download/1.3.6/istio-1.3.6-linux.tar.gz"
+    dest: "{{ workspace.path }}/istio"
+    extra_opts:
+      - --strip=1
+    remote_src: yes
+
+- name: install istioctl
+  copy:
+    src: "{{ workspace.path }}/istio/bin/istioctl"
+    dest: /var/snap/microk8s/current/bin
+  become: yes
+
+- name: copy istio crds to snap path
+  copy:
+    src: "{{ item }}"
+    dest: /var/snap/microk8s/current/actions/istio/
+  with_fileglob:
+    - "{{ workspace.path }}/istio/install/kubernetes/helm/istio-init/files/crd-??.yaml"
+  become: yes
+
+- name: copy istio demo yaml to snap path
+  copy:
+    src: "{{ item }}"
+    dest: /var/snap/microk8s/current/actions/istio/
+  with_fileglob:
+    - "{{ workspace.path }}/istio/install/kubernetes/istio-demo*yaml"
+  become: yes
+
+#
+# end of istio workaround
+#
+
 - name: enable microk8s features (istio)
   shell: echo "n" | microk8s.enable istio
   environment: "{{ proxy_env }}"
