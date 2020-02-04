@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kfp
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "4096m"
+spec:
+  rules:
+    - host: kfp.{{ cluster_dns }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ml-pipeline
+              servicePort: 8080

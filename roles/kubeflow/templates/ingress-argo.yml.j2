@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: argo-ui
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "4096m"
+spec:
+  rules:
+    - host: argo.{{ cluster_dns }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: argo-ui
+              servicePort: 8081

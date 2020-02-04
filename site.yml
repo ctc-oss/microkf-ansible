@@ -9,3 +9,8 @@
         snap set system proxy.https="{{ proxy_env.https_proxy }}"
   roles:
     - microk8s
+
+- name: Set up Kubeflow
+  hosts: localhost
+  roles:
+    - kubeflow

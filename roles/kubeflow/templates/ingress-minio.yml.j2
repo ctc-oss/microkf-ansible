@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: minio
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "4096m"
+spec:
+  rules:
+    - host: minio.{{ cluster_dns }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: minio-service
+              servicePort: 9000

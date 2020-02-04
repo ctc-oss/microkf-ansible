@@ -1,0 +1,47 @@
+---
+- name: create tmp workspace
+  tempfile:
+    state: directory
+    suffix: microkf
+  register: workspace
+
+- name: create tmp workspace bin
+  file:
+    path: "{{ workspace.path }}/bin"
+    state: directory
+
+- name: configure resources
+  template:
+    src: "{{ item }}"
+    dest: "{{ workspace.path }}/{{ item | basename | regex_replace('\\.j2','') }}"
+  with_fileglob:
+    - "{{ role_path }}/templates/*.j2"
+
+- name: check for kfctl
+  stat:
+    path: "{{ workspace.path }}/bin/kfctl"
+  register: kfctl_exist
+
+- name: download kfctl
+  unarchive:
+    src: "https://github.com/kubeflow/kfctl/releases/download/v{{ kubeflow_version }}/kfctl_v{{ kfctl_version }}_linux.tar.gz"
+    dest: "{{ workspace.path }}/bin"
+    extra_opts:
+      - --strip=1
+    remote_src: yes
+  when: kfctl_exist.stat.exists == False
+
+- name: create tmp app workspace
+  file:
+    path: "{{ workspace.path }}/app"
+    state: directory
+
+- name: kfctl build
+  shell:
+    cmd: "{{ workspace.path }}/bin/kfctl build {{ kubeflow_profile }} -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    chdir: "{{ workspace.path }}/app"
+
+- name: kfctl apply
+  shell:
+    cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    chdir: "{{ workspace.path }}/app"
