@@ -31,7 +31,7 @@
     path: "{{ workspace.path }}/app"
     state: directory
 
-- name: kfctl build
+- name: build kf app
   shell:
     cmd: "rm *.yaml; {{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
@@ -41,7 +41,16 @@
   until: kfctl_build_result is succeeded
   environment: "{{ proxy_env }}"
 
-- name: kfctl apply
+# cut seldon out the kfctl_k8s_istio.{{ kubeflow_version }}.yaml before it is applied
+- name: disable seldon (hack)
+  replace:
+    path: "{{ workspace.path }}/app/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    regexp: '(<sadmin>[\s\S]*)</sadmin>'
+    after: '^     name: profiles$'
+    before: '^  repos:$'
+    replace: ''
+
+- name: deploy kf app
   shell:
     cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
