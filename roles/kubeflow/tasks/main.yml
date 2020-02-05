@@ -25,6 +25,7 @@
       - --strip=1
     remote_src: yes
   when: kfctl_exist.stat.exists == False
+  environment: "{{ proxy_env }}"
 
 - name: create tmp app workspace
   file:
