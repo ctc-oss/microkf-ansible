@@ -4,6 +4,7 @@ metadata:
   name: minio
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "4096m"
+  namespace: kubeflow
 spec:
   rules:
     - host: minio.{{ cluster_dns }}

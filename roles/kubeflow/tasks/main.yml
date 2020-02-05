@@ -60,3 +60,11 @@
   register: kfctl_apply_result
   until: kfctl_apply_result is succeeded
   environment: "{{ proxy_env }}"
+
+- name: apply kf ingress
+  shell:
+    cmd: "kubectl apply -f {{ workspace.path }}"
+  retries: 5
+  delay: 2
+  register: kubectl_ingress_result
+  until: kubectl_ingress_result is succeeded

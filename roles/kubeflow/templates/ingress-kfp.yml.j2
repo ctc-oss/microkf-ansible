@@ -4,6 +4,7 @@ metadata:
   name: kfp
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "4096m"
+  namespace: kubeflow
 spec:
   rules:
     - host: kfp.{{ cluster_dns }}
