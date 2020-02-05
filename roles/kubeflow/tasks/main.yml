@@ -46,7 +46,7 @@
 - name: update seldon crds (hack)
   copy:
     src: files/seldondeployments.machinelearning.seldon.io-crd.yaml
-    dest: "{{ workspace.path }}/kustomize/seldon-core-operator/base"
+    dest: "{{ workspace.path }}/app/kustomize/seldon-core-operator/base"
 
 - name: deploy kf app
   shell:
