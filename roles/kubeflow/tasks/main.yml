@@ -33,11 +33,20 @@
 
 - name: kfctl build
   shell:
-    cmd: "{{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    cmd: "rm *.yaml; {{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
+  retries: 5
+  delay: 2
+  register: kfctl_build_result
+  until: kfctl_build_result is succeeded
   environment: "{{ proxy_env }}"
 
 - name: kfctl apply
   shell:
     cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
+  retries: 5
+  delay: 2
+  register: kfctl_apply_result
+  until: kfctl_apply_result is succeeded
+  environment: "{{ proxy_env }}"
