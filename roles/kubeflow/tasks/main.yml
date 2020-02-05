@@ -59,6 +59,8 @@
   delay: 2
   register: kfctl_apply_result
   until: kfctl_apply_result is succeeded
+  async: 1800
+  poll: 15
   environment: "{{ proxy_env }}"
 
 - name: apply kf ingress
