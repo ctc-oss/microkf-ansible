@@ -47,7 +47,7 @@
   when: proxy_env.https_proxy != ""
 
 - name: enable microk8s features
-  shell: microk8s.enable dns dashboard storage gpu ingress
+  shell: /snap/bin/microk8s.enable dns dashboard storage gpu ingress
 
 - name: export kubectl config file
   shell:
