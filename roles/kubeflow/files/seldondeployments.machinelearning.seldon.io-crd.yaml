@@ -1,3 +1,5 @@
+# seldon 0.4.1 updated to work with kubernetes 1.16+
+
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
@@ -2978,6 +2980,7 @@ spec:
                               - REST
                               - GRPC
                             type: string
+                        type: object
                       envSecretRefName:
                         type: string
                       modelUri:
@@ -2996,7 +2999,9 @@ spec:
                               items:
                                 properties:
                                   children:
-                                    items: {}
+                                    items:
+                                      properties: {}
+                                      type: object
                                     type: array
                                   endpoint:
                                     properties:
@@ -3009,6 +3014,7 @@ spec:
                                           - REST
                                           - GRPC
                                         type: string
+                                    type: object
                                   envSecretRefName:
                                     type: string
                                   implementation:
@@ -3048,6 +3054,7 @@ spec:
                                       - TRANSFORMER
                                       - OUTPUT_TRANSFORMER
                                     type: string
+                                type: object
                               type: array
                             endpoint:
                               properties:
@@ -3060,6 +3067,7 @@ spec:
                                     - REST
                                     - GRPC
                                   type: string
+                              type: object
                             implementation:
                               enum:
                                 - UNKNOWN_IMPLEMENTATION
@@ -3093,6 +3101,7 @@ spec:
                                 - TRANSFORMER
                                 - OUTPUT_TRANSFORMER
                               type: string
+                          type: object
                         type: array
                       endpoint:
                         properties:
@@ -3105,6 +3114,7 @@ spec:
                               - REST
                               - GRPC
                             type: string
+                        type: object
                       implementation:
                         enum:
                           - UNKNOWN_IMPLEMENTATION
@@ -3138,6 +3148,7 @@ spec:
                           - TRANSFORMER
                           - OUTPUT_TRANSFORMER
                         type: string
+                    type: object
                   labels:
                     type: object
                   name:
@@ -3165,6 +3176,7 @@ spec:
                                       type: boolean
                                   required:
                                     - key
+                                  type: object
                                 fieldRef:
                                   properties:
                                     apiVersion:
@@ -3173,6 +3185,7 @@ spec:
                                       type: string
                                   required:
                                     - fieldPath
+                                  type: object
                                 resourceFieldRef:
                                   properties:
                                     containerName:
@@ -3183,6 +3196,7 @@ spec:
                                       type: string
                                   required:
                                     - resource
+                                  type: object
                                 secretKeyRef:
                                   properties:
                                     key:
@@ -3193,8 +3207,11 @@ spec:
                                       type: boolean
                                   required:
                                     - key
+                                  type: object
+                              type: object
                           required:
                             - name
+                          type: object
                         type: array
                         x-kubernetes-patch-merge-key: name
                         x-kubernetes-patch-strategy: merge
@@ -3206,8 +3223,12 @@ spec:
                           requests:
                             additionalProperties: true
                             type: object
+                        type: object
                     type: object
+                type: object
               type: array
+          type: object
+      type: object
   version: v1alpha2
   versions:
     - name: v1alpha2
