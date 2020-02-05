@@ -1,6 +1,7 @@
 ---
 - name: Set up Microk8s
   hosts: localhost
+  gather_facts: no
   become: yes
   pre_tasks:
     - name: set snap proxy
