@@ -42,14 +42,11 @@
   until: kfctl_build_result is succeeded
   environment: "{{ proxy_env }}"
 
-# cut seldon out the kfctl_k8s_istio.{{ kubeflow_version }}.yaml before it is applied
-- name: disable seldon (hack)
-  replace:
-    path: "{{ workspace.path }}/app/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
-    regexp: '(<sadmin>[\s\S]*)</sadmin>'
-    after: '^     name: profiles$'
-    before: '^  repos:$'
-    replace: ''
+# update seldon crds for >= 1.16 kubernetes
+- name: update seldon crds (hack)
+  copy:
+    src: files/seldondeployments.machinelearning.seldon.io-crd.yaml
+    dest: "{{ workspace.path }}/kustomize/seldon-core-operator/base"
 
 - name: deploy kf app
   shell:
