@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metadata-api
+  namespace: kubeflow
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api
+spec:
+  rules:
+    - host: kf.{{ cluster_dns }}
+      http:
+        paths:
+          - path: /api
+            backend:
+              serviceName: metadata-service
+              servicePort: 8080
