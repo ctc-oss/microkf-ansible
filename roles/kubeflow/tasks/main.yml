@@ -42,6 +42,12 @@
   until: kfctl_build_result is succeeded
   environment: "{{ proxy_env }}"
 
+- name: patch argo container runtime executor
+  lineinfile:
+    path: "{{ workspace.path }}/app/kustomize/argo/base/params.env"
+    regexp: '^containerRuntimeExecutor='
+    line: 'containerRuntimeExecutor=pns'
+
 # update seldon crds for >= 1.16 kubernetes
 - name: update seldon crds (hack)
   copy:
