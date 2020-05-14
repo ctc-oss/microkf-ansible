@@ -19,7 +19,7 @@
 
 - name: download kfctl
   unarchive:
-    src: "https://github.com/kubeflow/kfctl/releases/download/v{{ kubeflow_version }}/kfctl_v{{ kfctl_version }}_linux.tar.gz"
+    src: "https://github.com/kubeflow/kfctl/releases/download/{{ kubeflow_version }}/kfctl_v{{ kfctl_version }}_linux.tar.gz"
     dest: "{{ workspace.path }}/bin"
     extra_opts:
       - --strip=1
@@ -34,7 +34,7 @@
 
 - name: build kf app
   shell:
-    cmd: "rm *.yaml; {{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
+    cmd: "rm *.yaml; {{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/{{ kubeflow_version }}/kfdef/kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
     chdir: "{{ workspace.path }}/app"
   retries: 5
   delay: 2
