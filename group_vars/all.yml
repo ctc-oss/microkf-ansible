@@ -1,9 +1,9 @@
 deployment_name:  default
 microk8s_channel: 1.17/stable
-kubeflow_version: 0.7.1
+kubeflow_version: v1.0
 kubeflow_gh_repo: kubeflow/kubeflow
 ksonnet_version:  0.13.1
-kfctl_version: 0.7.1-2-g55f9b2a
+kfctl_version: 1.0-0-g94c35cf
 
 
 cluster_dns: com.github.jw3
