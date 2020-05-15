@@ -48,12 +48,6 @@
     regexp: '^containerRuntimeExecutor='
     line: 'containerRuntimeExecutor=pns'
 
-# update seldon crds for >= 1.16 kubernetes
-- name: update seldon crds (hack)
-  copy:
-    src: files/seldondeployments.machinelearning.seldon.io-crd.yaml
-    dest: "{{ workspace.path }}/app/kustomize/seldon-core-operator/base"
-
 - name: deploy kf app
   shell:
     cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.{{ kubeflow_version }}.yaml"
