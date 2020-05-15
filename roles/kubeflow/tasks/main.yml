@@ -19,7 +19,7 @@
 
 - name: download kfctl
   unarchive:
-    src: "https://github.com/{{ kfctl_gh_repo }}/releases/download/v{{ kfctl_version }}/kfctl_v{{ kfctl_version }}_linux.tar.gz"
+    src: "https://github.com/{{ kfctl_gh_repo }}/releases/download/{{ kfctl_version }}/kfctl_{{ kfctl_version }}_linux.tar.gz"
     dest: "{{ workspace.path }}/bin"
     extra_opts:
       - --strip=1
