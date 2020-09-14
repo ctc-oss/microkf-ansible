@@ -17,9 +17,18 @@
     path: "{{ workspace.path }}/bin/kfctl"
   register: kfctl_exist
 
+- name: get kfctl download url
+  shell: "curl -s https://api.github.com/repos/{{ kfctl_gh_repo }}/releases/tags/{{ kfctl_version }} | jq -r .assets[].browser_download_url | grep _linux"
+  when: kfctl_exist.stat.exists == False
+  register: kfctl_dl_url
+  environment: "{{ proxy_env }}"
+
+- debug:
+    msg: "{{ kfctl_dl_url.stdout }}"
+
 - name: download kfctl
   unarchive:
-    src: "https://github.com/{{ kfctl_gh_repo }}/releases/download/{{ kfctl_version }}/kfctl_{{ kfctl_version }}_linux.tar.gz"
+    src: "{{ kfctl_dl_url.stdout }}"
     dest: "{{ workspace.path }}/bin"
     extra_opts:
       - --strip=1
