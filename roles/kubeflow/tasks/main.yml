@@ -42,15 +42,13 @@
   get_url:
     url: "https://raw.githubusercontent.com/kubeflow/manifests/{{ manifest_version }}/kfdef/kfctl_k8s_istio.yaml"
     dest: "{{ workspace.path }}/app"
+  environment: "{{ proxy_env }}"
 
 - name: patch manifest config
-  blockinfile:
+  lineinfile:
     path: "{{ workspace.path }}/app/kfctl_k8s_istio.yaml"
-    block: |
-      repos:
-        - name: manifests
-          uri: https://github.com/kubeflow/manifests/archive/{{ manifest_version }}.zip
-      version: {{ manifest_version }}
+    regexp: "uri:"
+    line: "    uri: https://codeload.github.com/kubeflow/manifests/tar.gz/{{ manifest_version }}"
 
 - name: build kf app
   shell:
