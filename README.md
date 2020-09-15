@@ -9,8 +9,8 @@ ansible-playbook site.yml
 
 | Software   | Version  | 
 |------------|----------|
-| Microk8s   | 1.18     |
-| Kubeflow   | 1.0      |
+| Microk8s   | 1.17     |
+| Kubeflow   | 1.1.0    |
 
 
 ### environment

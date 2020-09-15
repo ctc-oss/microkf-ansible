@@ -40,7 +40,7 @@
 
 - name: download manifest repo
   get_url:
-    url: "https://raw.githubusercontent.com/kubeflow/manifests/{{ manifest_version }}/kfdef/kfctl_k8s_istio.yaml"
+    url: "https://raw.githubusercontent.com/{{ manifest_gh_repo }}/{{ manifest_version }}/kfdef/kfctl_k8s_istio.yaml"
     dest: "{{ workspace.path }}/app"
   environment: "{{ proxy_env }}"
 
@@ -48,7 +48,7 @@
   lineinfile:
     path: "{{ workspace.path }}/app/kfctl_k8s_istio.yaml"
     regexp: "uri:"
-    line: "    uri: https://codeload.github.com/kubeflow/manifests/tar.gz/{{ manifest_version }}"
+    line: "    uri: https://codeload.github.com/{{ manifest_gh_repo }}/tar.gz/{{ manifest_version }}"
 
 - name: build kf app
   shell:
