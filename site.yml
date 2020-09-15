@@ -16,6 +16,9 @@
       register: workspace
       become: no
 
+    - debug:
+        msg: "{{ workspace.path }}"
+
   roles:
     - microk8s
 

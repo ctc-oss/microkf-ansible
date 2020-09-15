@@ -23,9 +23,6 @@
   register: kfctl_dl_url
   environment: "{{ proxy_env }}"
 
-- debug:
-    msg: "{{ kfctl_dl_url.stdout }}"
-
 - name: download kfctl
   unarchive:
     src: "{{ kfctl_dl_url.stdout }}"
