@@ -17,9 +17,15 @@
     path: "{{ workspace.path }}/bin/kfctl"
   register: kfctl_exist
 
+- name: get kfctl download url
+  shell: "curl -s https://api.github.com/repos/{{ kfctl_gh_repo }}/releases/tags/{{ kfctl_version }} | jq -r .assets[].browser_download_url | grep _linux"
+  when: kfctl_exist.stat.exists == False
+  register: kfctl_dl_url
+  environment: "{{ proxy_env }}"
+
 - name: download kfctl
   unarchive:
-    src: "https://github.com/{{ kfctl_gh_repo }}/releases/download/{{ kfctl_version }}/kfctl_{{ kfctl_version }}_linux.tar.gz"
+    src: "{{ kfctl_dl_url.stdout }}"
     dest: "{{ workspace.path }}/bin"
     extra_opts:
       - --strip=1
@@ -32,9 +38,21 @@
     path: "{{ workspace.path }}/app"
     state: directory
 
+- name: download manifest repo
+  get_url:
+    url: "https://raw.githubusercontent.com/{{ manifest_gh_repo }}/{{ manifest_version }}/kfdef/kfctl_k8s_istio.yaml"
+    dest: "{{ workspace.path }}/app"
+  environment: "{{ proxy_env }}"
+
+- name: patch manifest config
+  lineinfile:
+    path: "{{ workspace.path }}/app/kfctl_k8s_istio.yaml"
+    regexp: "uri:"
+    line: "    uri: https://codeload.github.com/{{ manifest_gh_repo }}/tar.gz/{{ manifest_version }}"
+
 - name: build kf app
   shell:
-    cmd: "rm *.yaml; {{ workspace.path }}/bin/kfctl build -f https://raw.githubusercontent.com/kubeflow/manifests/v1.0-branch/kfdef/kfctl_k8s_istio.{{ manifest_version }}.yaml"
+    cmd: "{{ workspace.path }}/bin/kfctl build -f kfctl_k8s_istio.yaml"
     chdir: "{{ workspace.path }}/app"
   retries: 5
   delay: 2
@@ -48,9 +66,15 @@
     regexp: '^containerRuntimeExecutor='
     line: 'containerRuntimeExecutor=pns'
 
+- name: patch seldon resources.yaml
+  copy:
+    src: files/resources.yaml
+    dest: "{{ workspace.path }}/app/kustomize/seldon-core-operator/base"
+    mode: '0644'
+
 - name: deploy kf app
   shell:
-    cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.{{ manifest_version }}.yaml"
+    cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.yaml"
     chdir: "{{ workspace.path }}/app"
   retries: 5
   delay: 2
