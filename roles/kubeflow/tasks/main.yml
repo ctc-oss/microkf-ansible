@@ -66,6 +66,12 @@
     regexp: '^containerRuntimeExecutor='
     line: 'containerRuntimeExecutor=pns'
 
+- name: patch seldon resources.yaml
+  copy:
+    src: files/resources.yaml
+    dest: "{{ workspace.path }}/app/kustomize/seldon-core-operator/base"
+    mode: '0644'
+
 - name: deploy kf app
   shell:
     cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.yaml"
