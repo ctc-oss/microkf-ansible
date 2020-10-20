@@ -49,6 +49,12 @@
 - name: enable microk8s features
   shell: /snap/bin/microk8s.enable dns dashboard storage gpu ingress
 
+- name: create .kube dir
+  file:
+    path: $HOME/.kube
+    state: directory
+  become: no
+
 - name: export kubectl config file
   shell:
     chdir: $HOME/.kube
