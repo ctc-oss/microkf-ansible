@@ -82,6 +82,10 @@
   until: kfctl_apply_result is succeeded
   environment: "{{ proxy_env }}"
 
+- name: kfctl apply command
+  debug:
+    msg: "cd {{ workspace.path }}/app && {{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.yaml"
+
 - name: apply kf ingress
   shell:
     cmd: "kubectl apply -f {{ workspace.path }}"
