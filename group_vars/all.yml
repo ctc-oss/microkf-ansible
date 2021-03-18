@@ -10,8 +10,9 @@ kfctl_gh_repo: kubeflow/kfctl
 cluster_dns: com.github.jw3
 
 proxy_env:
-  http_proxy: "{{ lookup('env', 'playbook_http_proxy') | default('') }}"
-  https_proxy: "{{ lookup('env', 'playbook_https_proxy') | default('') }}"
-  HTTP_PROXY: "{{ lookup('env', 'playbook_http_proxy') | default('') }}"
-  HTTPS_PROXY: "{{ lookup('env', 'playbook_https_proxy') | default('') }}"
-  no_proxy: "{{ lookup('env', 'playbook_no_proxy') | default('') }}"
+  no_proxy: "{{ lookup('env', 'no_proxy') }}"
+  http_proxy: "{{ lookup('env', 'http_proxy') }}"
+  https_proxy: "{{ lookup('env', 'https_proxy') }}"
+  NO_PROXY: "{{ lookup('env', 'no_proxy') }}"
+  HTTP_PROXY: "{{ lookup('env', 'http_proxy') }}"
+  HTTPS_PROXY: "{{ lookup('env', 'https_proxy') }}"

@@ -21,14 +21,6 @@ the playbook removesls spartakus
 https://www.kubeflow.org/docs/other-guides/usage-reporting/
 
 
-### environment
-
-| Field                   | Description                                | Default Value              |
-|-------------------------|--------------------------------------------|----------------------------|
-| playbook_http_proxy     | Specified http proxy for playbooks         |                            |
-| playbook_https_proxy    | Specified https proxy for playbooks        |                            |
-
-
 ### behind proxy?
 
 Update the group_vars to
