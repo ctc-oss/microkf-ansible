@@ -93,3 +93,7 @@
   delay: 2
   register: kubectl_ingress_result
   until: kubectl_ingress_result is succeeded
+
+- name: remove spartacus
+  shell:
+    cmd: "kubectl -n kubeflow delete deploy -l app=spartakus"

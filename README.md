@@ -12,6 +12,14 @@ ansible-playbook site.yml
 | Microk8s   | 1.18     |
 | Kubeflow   | 1.1.0    |
 
+### no anonymous usage reports
+
+the playbook removesls spartakus
+
+`k -n kubeflow delete deploy -l app=spartakus`
+
+https://www.kubeflow.org/docs/other-guides/usage-reporting/
+
 
 ### environment
 
