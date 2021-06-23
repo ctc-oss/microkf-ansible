@@ -7,7 +7,7 @@ ksonnet_version:  0.13.1
 kfctl_version: v1.0.2
 kfctl_gh_repo: kubeflow/kfctl
 
-cluster_dns: com.github.jw3
+cluster_dns: "{{ lookup('env', 'cluster_dns') | default(lookup('env', 'HOSTNAME'), True) }}"
 
 proxy_env:
   no_proxy: "{{ lookup('env', 'no_proxy') }}"
