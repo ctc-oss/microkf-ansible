@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-ingress-microk8s-controller
+spec:
+  selector:
+    matchLabels:
+      name: nginx-ingress-microk8s
+  template:
+    metadata:
+      labels:
+        name: nginx-ingress-microk8s
+    spec:
+      containers:
+        - name: nginx-ingress-microk8s
+          args:
+            - /nginx-ingress-controller
+            - --configmap=$(POD_NAMESPACE)/nginx-load-balancer-microk8s-conf
+            - --publish-status-address=127.0.0.1
+            - --enable-ssl-passthrough
+          image: k8s.gcr.io/ingress-nginx/controller:v0.47.0

@@ -8,6 +8,15 @@
 - import_tasks: setup.yml
   when: setup_microk8s
 
+- name: patch ingress controller
+  k8s:
+    namespace: ingress
+    name: nginx-ingress-microk8s-controller
+    src: "{{ role_path }}/patch/ingress-controller.yml"
+    merge_type: strategic-merge
+    state: present
+  become: no
+
 - name: enable microk8s gpu support [optional]
   shell: /snap/bin/microk8s.enable gpu
   when: gpu_enabled
