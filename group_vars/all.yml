@@ -1,13 +1,18 @@
-deployment_name:  default
 microk8s_channel: 1.18/stable
+
 kubeflow_gh_repo: kubeflow/kubeflow
 manifest_gh_repo: kubeflow/manifests
+
 manifest_version: v1.1.0
 ksonnet_version:  0.13.1
+
 kfctl_version: v1.2.0
 kfctl_gh_repo: kubeflow/kfctl
 
 cluster_dns: "{{ lookup('env', 'cluster_dns') | default(lookup('env', 'HOSTNAME'), True) }}"
+
+# flags
+setup_microk8s: "{{ lookup('env', 'setup_microk8s') | default('yes', True) | bool }} "
 
 proxy_env:
   no_proxy: "{{ lookup('env', 'no_proxy') }}"

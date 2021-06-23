@@ -1,0 +1,47 @@
+- name: install microk8s
+  snap:
+    name: microk8s
+    classic: yes
+    channel: "{{ microk8s_channel }}"
+
+- name: alias kubectl
+  shell: |
+    snap alias microk8s.kubectl k
+    snap alias microk8s.kubectl kubectl
+
+# if https proxy is required
+- name: containerd https_proxy
+  lineinfile:
+    path: /var/snap/microk8s/current/args/containerd-env
+    regexp: '^HTTPS_PROXY='
+    line: 'HTTPS_PROXY={{ proxy_env.https_proxy }}'
+  when: proxy_env.https_proxy != ""
+
+- name: containerd no_proxy
+  lineinfile:
+    path: /var/snap/microk8s/current/args/containerd-env
+    regexp: '^NO_PROXY='
+    line: 'NO_PROXY={{ proxy_env.no_proxy }}'
+  when: proxy_env.no_proxy != ""
+
+- name: restart containerd
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: snap.microk8s.daemon-containerd.service
+  when: proxy_env.https_proxy != ""
+
+- name: enable microk8s features
+  shell: /snap/bin/microk8s.enable dns dashboard storage gpu ingress
+
+- name: create .kube dir
+  file:
+    path: $HOME/.kube
+    state: directory
+  become: no
+
+- name: export kubectl config file
+  shell:
+    chdir: $HOME/.kube
+    cmd: kubectl config view --raw > config
+  become: no

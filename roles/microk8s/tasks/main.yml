@@ -1,62 +1,9 @@
 ---
-- name: install microk8s
-  snap:
-    name: microk8s
-    classic: yes
-    channel: "{{ microk8s_channel }}"
-
-- name: alias kubectl
-  shell: |
-    snap alias microk8s.kubectl k
-    snap alias microk8s.kubectl kubectl
-
-- name: alias kubectl
-  shell: |
-    snap alias microk8s.kubectl k
-    snap alias microk8s.kubectl kubectl
-
-- name: enable alpha api
-  lineinfile:
-    path: /var/snap/microk8s/current/args/kube-apiserver
-    line: '--runtime-config=settings.k8s.io/v1alpha1=true'
-
-- name: enable pod presets
-  lineinfile:
-    path: /var/snap/microk8s/current/args/kube-apiserver
-    line: '--enable-admission-plugins="PodPreset"'
-
-- name: restart kube api server
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: snap.microk8s.daemon-apiserver.service
-
-# if https proxy is required
-- name: containerd proxy
-  lineinfile:
-    path: /var/snap/microk8s/current/args/containerd-env
-    regexp: '^HTTPS_PROXY='
-    line: 'HTTPS_PROXY={{ proxy_env.https_proxy }}'
-  when: proxy_env.https_proxy != ""
-
-- name: restart containerd
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: snap.microk8s.daemon-containerd.service
-  when: proxy_env.https_proxy != ""
-
-- name: enable microk8s features
-  shell: /snap/bin/microk8s.enable dns dashboard storage gpu ingress
-
-- name: create .kube dir
+- name: create microk8s resources dir
   file:
-    path: $HOME/.kube
+    path: "{{ workspace.path }}/microk8s"
     state: directory
   become: no
 
-- name: export kubectl config file
-  shell:
-    chdir: $HOME/.kube
-    cmd: kubectl config view --raw > config
-  become: no
+- import_tasks: setup.yml
+  when: setup_microk8s
