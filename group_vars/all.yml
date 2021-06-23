@@ -13,6 +13,7 @@ cluster_dns: "{{ lookup('env', 'cluster_dns') | default(lookup('env', 'HOSTNAME'
 
 # flags
 setup_microk8s: "{{ lookup('env', 'setup_microk8s') | default('yes', True) | bool }} "
+gpu_enabled:    "{{ lookup('env', 'gpu_enabled'  )  | default('no',  True) | bool }}"
 
 proxy_env:
   no_proxy: "{{ lookup('env', 'no_proxy') }}"

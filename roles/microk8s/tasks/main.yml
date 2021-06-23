@@ -7,3 +7,7 @@
 
 - import_tasks: setup.yml
   when: setup_microk8s
+
+- name: enable microk8s gpu support [optional]
+  shell: /snap/bin/microk8s.enable gpu
+  when: gpu_enabled

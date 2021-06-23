@@ -32,7 +32,7 @@
   when: proxy_env.https_proxy != ""
 
 - name: enable microk8s features
-  shell: /snap/bin/microk8s.enable dns dashboard storage gpu ingress
+  shell: /snap/bin/microk8s.enable dns dashboard storage ingress
 
 - name: create .kube dir
   file:
