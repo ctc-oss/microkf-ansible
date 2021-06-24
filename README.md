@@ -5,6 +5,10 @@ Kubeflow on Microk8s wth Ansible
 ansible-playbook site.yml
 ```
 
+### Python requirements
+- ansible
+- openshift
+
 ### default configuration
 
 | Software   | Version  | 

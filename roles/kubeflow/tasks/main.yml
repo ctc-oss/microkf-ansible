@@ -5,6 +5,11 @@
     path: "{{ workspace.path }}/bin"
     state: directory
 
+- name: create manifests workspace
+  file:
+    path: "{{ workspace.path }}/manifests"
+    state: directory
+
 - name: configure resources
   template:
     src: "{{ item }}"
@@ -12,79 +17,35 @@
   with_fileglob:
     - "{{ role_path }}/templates/*.j2"
 
-- name: check for kfctl
-  stat:
-    path: "{{ workspace.path }}/bin/kfctl"
-  register: kfctl_exist
-
-- name: get kfctl download url
-  shell: "curl -s https://api.github.com/repos/{{ kfctl_gh_repo }}/releases/tags/{{ kfctl_version }} | jq -r .assets[].browser_download_url | grep _linux"
-  when: kfctl_exist.stat.exists == False
-  register: kfctl_dl_url
-  environment: "{{ proxy_env }}"
-
-- name: download kfctl
-  unarchive:
-    src: "{{ kfctl_dl_url.stdout }}"
-    dest: "{{ workspace.path }}/bin"
-    extra_opts:
-      - --strip=1
-    remote_src: yes
-  when: kfctl_exist.stat.exists == False
-  environment: "{{ proxy_env }}"
-
-- name: create tmp app workspace
-  file:
-    path: "{{ workspace.path }}/app"
-    state: directory
-
-- name: download manifest repo
+- name: download kustomize
   get_url:
-    url: "https://raw.githubusercontent.com/{{ manifest_gh_repo }}/{{ manifest_version }}/kfdef/kfctl_k8s_istio.yaml"
-    dest: "{{ workspace.path }}/app"
+    url: https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
+    dest: "{{ workspace.path }}/bin/kustomize"
+    mode: '0755'
   environment: "{{ proxy_env }}"
 
-- name: patch manifest config
-  lineinfile:
-    path: "{{ workspace.path }}/app/kfctl_k8s_istio.yaml"
-    regexp: "uri:"
-    line: "    uri: https://codeload.github.com/{{ manifest_gh_repo }}/tar.gz/{{ manifest_version }}"
+- name: get kubeflow manifests
+  unarchive:
+    src: "https://github.com/kubeflow/manifests/archive/refs/tags/{{ manifest_version }}.tar.gz"
+    dest: "{{ workspace.path }}/manifests"
+    remote_src: yes
+    extra_opts: [ --strip-components=1 ]
+  environment: "{{ proxy_env }}"
 
-- name: build kf app
+#- name: patch argo container runtime executor
+#  lineinfile:
+#    path: "{{ workspace.path }}/app/kustomize/argo/base/params.env"
+#    regexp: '^containerRuntimeExecutor='
+#    line: 'containerRuntimeExecutor=pns'
+
+- name: apply manifests
   shell:
-    cmd: "{{ workspace.path }}/bin/kfctl build -f kfctl_k8s_istio.yaml"
-    chdir: "{{ workspace.path }}/app"
+    cmd: "{{ workspace.path }}/bin/kustomize build example | kubectl apply -f -"
+    chdir: "{{ workspace.path }}/manifests"
   retries: 5
-  delay: 2
-  register: kfctl_build_result
-  until: kfctl_build_result is succeeded
-  environment: "{{ proxy_env }}"
-
-- name: patch argo container runtime executor
-  lineinfile:
-    path: "{{ workspace.path }}/app/kustomize/argo/base/params.env"
-    regexp: '^containerRuntimeExecutor='
-    line: 'containerRuntimeExecutor=pns'
-
-- name: patch seldon resources.yaml
-  copy:
-    src: files/resources.yaml
-    dest: "{{ workspace.path }}/app/kustomize/seldon-core-operator/base"
-    mode: '0644'
-
-- name: deploy kf app
-  shell:
-    cmd: "{{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.yaml"
-    chdir: "{{ workspace.path }}/app"
-  retries: 5
-  delay: 2
-  register: kfctl_apply_result
-  until: kfctl_apply_result is succeeded
-  environment: "{{ proxy_env }}"
-
-- name: kfctl apply command
-  debug:
-    msg: "cd {{ workspace.path }}/app && {{ workspace.path }}/bin/kfctl apply -f kfctl_k8s_istio.yaml"
+  delay: 5
+  register: apply_manifest_result
+  until: apply_manifest_result is succeeded
 
 - name: apply kf ingress
   shell:
