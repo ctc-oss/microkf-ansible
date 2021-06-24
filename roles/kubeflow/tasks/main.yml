@@ -5,6 +5,11 @@
     path: "{{ workspace.path }}/bin"
     state: directory
 
+- name: create manifests workspace
+  file:
+    path: "{{ workspace.path }}/manifests"
+    state: directory
+
 - name: configure resources
   template:
     src: "{{ item }}"
@@ -21,20 +26,26 @@
 
 - name: get kubeflow manifests
   unarchive:
-    src: "https://github.com/kubeflow/manifests/archive/refs/tags/{{ manifest_version }}.zip"
+    src: "https://github.com/kubeflow/manifests/archive/refs/tags/{{ manifest_version }}.tar.gz"
     dest: "{{ workspace.path }}/manifests"
-    #### remote_src: yes
+    remote_src: yes
+    extra_opts: [ --strip-components=1 ]
+  environment: "{{ proxy_env }}"
 
-- name: patch argo container runtime executor
-  lineinfile:
-    path: "{{ workspace.path }}/app/kustomize/argo/base/params.env"
-    regexp: '^containerRuntimeExecutor='
-    line: 'containerRuntimeExecutor=pns'
+#- name: patch argo container runtime executor
+#  lineinfile:
+#    path: "{{ workspace.path }}/app/kustomize/argo/base/params.env"
+#    regexp: '^containerRuntimeExecutor='
+#    line: 'containerRuntimeExecutor=pns'
 
 - name: apply manifests
   shell:
-    cmd: while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
-    pwd: "{{ workspace.path }}/manifests"
+    cmd: "{{ workspace.path }}/bin/kustomize build example | kubectl apply -f -"
+    chdir: "{{ workspace.path }}/manifests"
+  retries: 5
+  delay: 5
+  register: apply_manifest_result
+  until: apply_manifest_result is succeeded
 
 - name: apply kf ingress
   shell:
